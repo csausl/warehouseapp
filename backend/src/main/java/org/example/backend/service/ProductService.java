@@ -7,6 +7,7 @@ import org.example.backend.model.entities.Supplier;
 import org.example.backend.repository.InboundOrderRepo;
 import org.example.backend.repository.ProductRepo;
 import org.example.backend.repository.SupplierRepo;
+import org.example.backend.utils.enums.Category;
 import org.example.backend.utils.enums.Status;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,14 @@ public class ProductService {
     private final InboundOrderRepo inboundOrderRepo;
     private final SupplierRepo supplierRepo;
 
+    Product defaultproduct=new Product("1","testproduct","123445", "testprodukt",1, Category.CLOTHING);
+
+
     public ProductService(ProductRepo productRepo, InboundOrderRepo inboundOrderRepo, SupplierRepo supplierRepo) {
         this.productRepo = productRepo;
         this.inboundOrderRepo = inboundOrderRepo;
         this.supplierRepo = supplierRepo;
+        this.productRepo.save(defaultproduct);
     }
 
     public List<Product> getAll() {

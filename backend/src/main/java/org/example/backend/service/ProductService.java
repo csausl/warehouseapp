@@ -23,23 +23,23 @@ public class ProductService {
     private final ProductRepo productRepo;
     private final InboundOrderRepo inboundOrderRepo;
     private final SupplierRepo supplierRepo;
-    //private final IDService idService;
-   // private final BarCodeService barCodeService;
+    private final IDService idService;
+    private final BarCodeService barCodeService;
 
     Product defaultproduct=new Product("1","testproduct","123445", "testprodukt",1, Category.CLOTHING);
 
 
     public ProductService(ProductRepo productRepo,
                           InboundOrderRepo inboundOrderRepo,
-                          SupplierRepo supplierRepo
-                          //IDService idService,
-                          // BarCodeService barCodeService
+                          SupplierRepo supplierRepo,
+                          IDService idService,
+                          BarCodeService barCodeService
                           ) {
         this.productRepo = productRepo;
         this.inboundOrderRepo = inboundOrderRepo;
         this.supplierRepo = supplierRepo;
-        // this.idService = idService;
-        //this.barCodeService = barCodeService;
+        this.idService = idService;
+        this.barCodeService = barCodeService;
         this.productRepo.save(defaultproduct);
     }
 
@@ -65,25 +65,17 @@ public class ProductService {
         return  product;
     }
 
-    public Product addProduct(NewProductDTO newProduct) {
-        //         @Id String id,
-        //        String name,
-        //        String barcode,
-        //        String description,
-        //        int quantity,
-        //        Category category
-        //
-        //        String name,
-        //        String barcode,
-        //        String description,
-        //        int quantity,
-        //        Category category) {
-        String newId = UUID.randomUUID().toString();
-        String newBarcode = UUID.randomUUID().toString();
+    public Product addProduct(NewProductDTO newProductDTO) {
+        return productRepo.save(createProductFromDTO(newProductDTO));
+    }
 
-        Product productToAdd= new Product(newId, newProduct.name(), newBarcode, newProduct.description(),newProduct.quantity(),newProduct.category());
-        productRepo.save(productToAdd);
-        return productToAdd;
+    public Product createProductFromDTO(NewProductDTO newProduct) {
+        return  new Product(idService.createId(),
+                newProduct.name(),
+                barCodeService.createBarCode(),
+                newProduct.description(),
+                newProduct.quantity(),
+                newProduct.category());
     }
 
     public Product create(InboundOrderDto inboundOrderDto) {

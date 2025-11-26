@@ -5,7 +5,7 @@ import org.example.backend.model.entities.Product;
 import org.example.backend.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
@@ -19,9 +19,17 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("/example")
+    public String example(){
+        return """
+                {"greeting":"hello chris"}
+                """;
+    }
+
     @PostMapping("/product")
-    public NewProductDTO addProduct(@RequestBody NewProductDTO newProduct) {
+    public Product addProduct(@RequestBody NewProductDTO newProduct) {
         System.out.println(newProduct );
-        return newProduct;
+
+        return productService.addProduct(newProduct);
     }
 }

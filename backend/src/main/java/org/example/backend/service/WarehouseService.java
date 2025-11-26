@@ -22,14 +22,18 @@ public class WarehouseService {
 
     }
 
+    public Warehouse getWarehouseById(String id) {
+        return warehouseRepo.findById(id).orElse(null);
+    }
+
     public List<Warehouse> saveTestData() {
         List<Warehouse> listWarehouses = List.of(
-                new Warehouse("1", "Hamburg", "Test Adresse 1"),
-                new Warehouse("2", "Berlin", "Test Adresse 2"),
-                new Warehouse("3", "München", "Test Adresse 3"),
-                new Warehouse("4", "Köln", "Test Adresse 4"),
-                new Warehouse("5", "Frankfurt", "Test Adresse 5")
+                new Warehouse("1", "Nordlager", "Hamburg", "Am Sandtrpark", "12", "20457"),
+                new Warehouse("2", "Zentrallager Ost", "Berlin", "Boxhagener Straße", "78", "10245"),
+                new Warehouse("3", "Südlager", "München", "Sesamstraße", "145", "80339")
         );
         return warehouseRepo.saveAll(listWarehouses);
     }
+
+
 }

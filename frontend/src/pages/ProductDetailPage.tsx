@@ -26,7 +26,6 @@ export default function ProductDetailPage() {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
 
-    // Produkt laden
     useEffect(() => {
         if (!id) return;
 
@@ -42,7 +41,6 @@ export default function ProductDetailPage() {
             });
     }, [id]);
 
-    // Eingaben aktualisieren
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) {
@@ -50,16 +48,12 @@ export default function ProductDetailPage() {
 
         const { name, value } = e.target;
 
-        const correctedValue =
-            name === "category" ? (value as Category) : value;
-
         setProduct({
             ...product,
-            [name]: correctedValue
+            [name]: value
         });
     }
 
-    // Produkt speichern
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!product) return;
@@ -74,56 +68,79 @@ export default function ProductDetailPage() {
     if (!product) return <p>Produkt nicht gefunden.</p>;
 
     return (
-        <div style={{ maxWidth: "500px", margin: "0 auto" }}>
-            <h1>Produkt bearbeiten</h1>
+        <div style={{ maxWidth: "500px", margin: "40px auto", padding: "20px" }}>
+            <h1 style={{ fontSize: "1.8rem", marginBottom: "20px", textAlign: "center" }}>
+                Produkt bearbeiten
+            </h1>
 
-            {message && <p>{message}</p>}
+            {message && (
+                <p style={{ textAlign: "center", marginBottom: "20px" }}>
+                    {message}
+                </p>
+            )}
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-
-                <label>
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px"
+                }}
+            >
+                {/* Name */}
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     Name:
                     <input
                         name="name"
                         value={product.name}
                         onChange={handleChange}
+                        className="input-field"
                     />
                 </label>
 
-                <label>
+                {/* Barcode */}
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     Barcode:
                     <input
                         name="barcode"
                         value={product.barcode}
                         onChange={handleChange}
+                        className="input-field"
                     />
                 </label>
 
-                <label>
+                {/* Beschreibung */}
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     Beschreibung:
                     <textarea
                         name="description"
                         value={product.description}
                         onChange={handleChange}
+                        className="input-field"
+                        rows={3}
                     />
                 </label>
 
-                <label>
+                {/* Menge */}
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     Menge:
                     <input
                         type="number"
                         name="quantity"
                         value={product.quantity}
                         onChange={handleChange}
+                        className="input-field"
                     />
                 </label>
 
-                <label>
+                {/* Kategorie */}
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     Kategorie:
                     <select
                         name="category"
                         value={product.category}
                         onChange={handleChange}
+                        className="input-field"
                     >
                         {Object.entries(categoryLabels).map(([key, label]) => (
                             <option key={key} value={key}>

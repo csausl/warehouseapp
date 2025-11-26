@@ -4,6 +4,7 @@ import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.WarehouseRepo;
 import org.example.backend.service.WarehouseService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +24,10 @@ public class WarehouseController {
     public List<Warehouse> getAllWarehouses() {
         return  warehouseService.getAllWarehouses();
 
+    }
+
+    @GetMapping("/{id}")
+    public Warehouse getWarehouseById(@PathVariable String id) {
+        return warehouseService.getWarehouseById(id);
     }
 }

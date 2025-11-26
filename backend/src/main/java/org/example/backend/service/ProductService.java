@@ -5,6 +5,7 @@ import org.example.backend.model.dto.ProductDto;
 import org.example.backend.model.entities.InboundOrder;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Supplier;
+import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.InboundOrderRepo;
 import org.example.backend.repository.ProductRepo;
 import org.example.backend.repository.SupplierRepo;
@@ -22,14 +23,12 @@ public class ProductService {
     private final InboundOrderRepo inboundOrderRepo;
     private final SupplierRepo supplierRepo;
 
-    Product defaultproduct=new Product("1","testproduct","123445", "testprodukt",1, Category.CLOTHING, "1");
-
 
     public ProductService(ProductRepo productRepo, InboundOrderRepo inboundOrderRepo, SupplierRepo supplierRepo) {
         this.productRepo = productRepo;
         this.inboundOrderRepo = inboundOrderRepo;
         this.supplierRepo = supplierRepo;
-        this.productRepo.save(defaultproduct);
+        saveTestData();
     }
 
     public List<Product> getAllProductsById(String warehouseId) {
@@ -78,5 +77,20 @@ public class ProductService {
 
     private String generateBarcode() {
         return UUID.randomUUID().toString();
+    }
+
+    public List<Product> saveTestData() {
+        List<Product> listProducts = List.of(
+                new Product("1","Kopfhörer","421873343001123","Over-Ear",120,Category.ELECTRONICS,"1"),
+                new Product("2","Fahrrad","73918420045128","Sportgerät",250,Category.SPORT_EQUIPMENT,"1"),
+                new Product("3","Creme","5908723434349017","Gesichtscreme",180,Category.COSMETICS,"1"),
+                new Product("4","T-Shirt","8712345678123","Baumwolle",340,Category.CLOTHING,"1"),
+                new Product("5","USB-C Kabel","400912887645621","1m Ladekabel",500,Category.ELECTRONICS,"2"),
+                new Product("6","Kopfhörer","421873443001123","Over-Ear",120,Category.ELECTRONICS,"2"),
+                new Product("7","Fahrrad","7391820045128","Sportgerät",250,Category.SPORT_EQUIPMENT,"2"),
+                new Product("8","Creme","590872334359017","Gesichtscreme",180,Category.COSMETICS,"3"),
+                new Product("9","T-Shirt","8712345678123","Baumwolle",340,Category.CLOTHING,"3")
+        );
+        return productRepo.saveAll(listProducts);
     }
 }

@@ -10,5 +10,9 @@ import org.springframework.data.annotation.Id;
 public record Warehouse(
         @Id String id,
         String name,
-        String address) {
+        String city,
+        String street,
+        String houseNumber,
+        String zipCode
+        ) {
 }

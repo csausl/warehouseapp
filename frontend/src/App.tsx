@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.tsx";
 import WarehousePage from "./pages/WarehousePage.tsx";
-import WarehouseProductsPage from "./pages/WarehouseProductsPage.tsx";
+import ProductPage from "./pages/ProductPage.tsx";
 import ProductDetailPage from "./pages/ProductDetailPage.tsx";
 
 import './App.css';
@@ -14,7 +14,7 @@ function App() {
                 <Route path="/" element={<WarehousePage />} />
 
                 {/* Produkte eines bestimmten Lagerhauses */}
-                <Route path="/warehouse/:warehouseId/products" element={<WarehouseProductsPage />} />
+                <Route path="/warehouse/:warehouseId/products" element={<ProductPage />} />
 
                 {/* Produktdetails */}
                 <Route path="/productdetails/:id" element={<ProductDetailPage />} />

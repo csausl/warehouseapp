@@ -9,7 +9,6 @@ import org.example.backend.utils.enums.Category;
 @With
 public record NewProductDTO(
         String name,
-        String barcode,
         String description,
         int quantity,
         Category category) {

@@ -73,7 +73,7 @@ export default function WarehousePage() {
         await axios.delete(`/api/warehouse/${id}`);
     };
 
-    // ➕ Neue Zeile anlegen
+    // Neue Zeile anlegen
     const handleAdd = () => {
         const id = "new-" + Math.random();
 

@@ -5,20 +5,20 @@ export type Column<T> = {
     key: keyof T;
     label: string;
     editable?: boolean;
-    render?: (value: any, row: T) => React.ReactNode;
+    inputType?: "text" | "number" | "select";
+    selectOptions?: { value: string; label: string }[];
+
+    render?: (value: T[keyof T], row: T, isEditing: boolean) => React.ReactNode;
 };
 
 type Props<T> = {
     columns: Column<T>[];
     data: T[];
-    setData: React.Dispatch<React.SetStateAction<T[]>>;
+    setData: (rows: T[]) => void;
     onSave: (row: T) => Promise<T>;
     onDelete: (id: string) => Promise<void>;
-
     editingId: string | null;
     setEditingId: (id: string | null) => void;
-
-    newRowBlocked: boolean;
 };
 
 export default function EditableTable<T extends { id: string }>({
@@ -28,12 +28,13 @@ export default function EditableTable<T extends { id: string }>({
                                                                     onSave,
                                                                     onDelete,
                                                                     editingId,
-                                                                    setEditingId,
-                                                                    newRowBlocked,
+                                                                    setEditingId
                                                                 }: Props<T>) {
+
     const [editValues, setEditValues] = useState<Partial<T>>({});
 
     const startEdit = (row: T) => {
+        if (editingId) return; // Keine zweite Zeile gleichzeitig
         setEditingId(row.id);
         setEditValues(row);
     };
@@ -41,7 +42,7 @@ export default function EditableTable<T extends { id: string }>({
     const cancelEdit = () => {
         if (!editingId) return;
 
-        // Wenn neue Zeile → löschen
+        // Neue Zeile löschen
         if (editingId.startsWith("new-")) {
             setData(prev => prev.filter(r => r.id !== editingId));
         }
@@ -67,9 +68,12 @@ export default function EditableTable<T extends { id: string }>({
     };
 
     const deleteRow = async (id: string) => {
+        if (editingId) return; // Wenn editiert wird, keine Löschung
+
         if (!confirm("Wirklich löschen?")) return;
 
         await onDelete(id);
+
         setData(prev => prev.filter(p => p.id !== id));
     };
 
@@ -82,42 +86,83 @@ export default function EditableTable<T extends { id: string }>({
                         {col.label}
                     </th>
                 ))}
-                <th className="w-10"></th>
-                <th className="w-10"></th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
 
             <tbody>
             {data.map(row => {
                 const isEditing = editingId === row.id;
-                const isNew = row.id.startsWith("new-");
 
                 return (
                     <tr key={row.id} className="border-b hover:bg-gray-50">
 
                         {columns.map(col => {
-                            const value = (row as any)[col.key];
+                            const baseValue = (row as any)[col.key];
+                            const value = isEditing
+                                ? (editValues as any)[col.key]
+                                : baseValue;
 
-                            return (
-                                <td key={String(col.key)} className="p-3">
+                            // 🟡 EDIT MODE
+                            if (isEditing && col.editable) {
 
-                                    {isEditing && col.editable ? (
+                                // SELECT
+                                if (col.inputType === "select" && col.selectOptions) {
+                                    return (
+                                        <td key={String(col.key)} className="p-3">
+                                            <select
+                                                value={value}
+                                                className="border rounded p-1 w-full"
+                                                onChange={e =>
+                                                    setEditValues(prev => ({
+                                                        ...prev,
+                                                        [col.key]: e.target.value
+                                                    }))
+                                                }
+                                            >
+                                                {col.selectOptions.map(o => (
+                                                    <option key={o.value} value={o.value}>
+                                                        {o.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    );
+                                }
+
+                                // TEXT / NUMBER
+                                return (
+                                    <td key={String(col.key)} className="p-3">
                                         <input
                                             className="border rounded p-1 w-full"
-                                            defaultValue={value}
-                                            onChange={(e) =>
+                                            value={value}
+                                            type={col.inputType === "number" ? "number" : "text"}
+                                            onChange={e =>
                                                 setEditValues(prev => ({
                                                     ...prev,
-                                                    [col.key]: e.target.value,
+                                                    [col.key]:
+                                                        col.inputType === "number"
+                                                            ? Number(e.target.value)
+                                                            : e.target.value
                                                 }))
                                             }
                                         />
-                                    ) : col.render ? (
-                                        col.render(value, row)
-                                    ) : (
-                                        <span>{value}</span>
-                                    )}
+                                    </td>
+                                );
+                            }
 
+                            if (col.render) {
+                                return (
+                                    <td key={String(col.key)} className="p-3">
+                                        {col.render(baseValue, row, isEditing)}
+                                    </td>
+                                );
+                            }
+
+                            return (
+                                <td key={String(col.key)} className="p-3">
+                                    {baseValue}
                                 </td>
                             );
                         })}
@@ -126,19 +171,20 @@ export default function EditableTable<T extends { id: string }>({
                         <td className="p-3 text-center">
                             {isEditing ? (
                                 <button
-                                    className="text-green-600 hover:text-green-800 disabled:text-gray-400"
+                                    className="text-green-600 hover:text-green-800"
                                     onClick={saveRow}
-                                    disabled={newRowBlocked && !isNew}
                                 >
-                                    <Save size={18} />
+                                    <Save size={16} />
                                 </button>
                             ) : (
                                 <button
-                                    className="text-yellow-600 hover:text-yellow-800 disabled:text-gray-400"
+                                    disabled={!!editingId}
+                                    className={`text-yellow-600 hover:text-yellow-800 ${
+                                        editingId ? "opacity-30 cursor-not-allowed" : ""
+                                    }`}
                                     onClick={() => startEdit(row)}
-                                    disabled={newRowBlocked}
                                 >
-                                    <Pencil size={18} />
+                                    <Pencil size={16} />
                                 </button>
                             )}
                         </td>
@@ -149,15 +195,17 @@ export default function EditableTable<T extends { id: string }>({
                                     className="text-gray-600 hover:text-gray-800"
                                     onClick={cancelEdit}
                                 >
-                                    <X size={18} />
+                                    <X size={16} />
                                 </button>
                             ) : (
                                 <button
-                                    className="text-red-600 hover:text-red-800 disabled:text-gray-400"
+                                    disabled={!!editingId}
+                                    className={`text-red-600 hover:text-red-800 ${
+                                        editingId ? "opacity-30 cursor-not-allowed" : ""
+                                    }`}
                                     onClick={() => deleteRow(row.id)}
-                                    disabled={newRowBlocked}
                                 >
-                                    <Trash2 size={18} />
+                                    <Trash2 size={16} />
                                 </button>
                             )}
                         </td>

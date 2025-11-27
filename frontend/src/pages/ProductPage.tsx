@@ -4,39 +4,37 @@ import { useParams, Link } from "react-router-dom";
 import EditableTable, { type Column } from "../components/EditableTable";
 import { Plus } from "lucide-react";
 
-// Produkt-Datentyp
+//Product Schema
 export type Product = {
     id: string;
     name: string;
     quantity: number;
     barcode: string;
-    category: string;
+    category: string; // Backend erwartet ENUM-Key
 };
 
-// Lagerhaus-Datentyp
+//Lagerhaus Schema
 export type Warehouse = {
     id: string;
     name: string;
 };
 
 export default function ProductPage() {
+    const { warehouseId } = useParams(); // ID aus URL holen
 
-    // Holt die warehouseId aus der URL (/warehouse/:warehouseId/products)
-    const { warehouseId } = useParams();
-
-    // Produktliste
+    // Produktliste im Zustand
     const [products, setProducts] = useState<Product[]>([]);
 
-    // Info über das aktuelle Lagerhaus für die Überschrift
+    // Aktuelles Lagerhaus
     const [warehouse, setWarehouse] = useState<Warehouse | null>(null);
 
-    // Welche Zeile gerade im Editiermodus ist
+    // Welches Produkt gerade editiert wird
     const [editingId, setEditingId] = useState<string | null>(null);
 
     // Ladezustand
     const [loading, setLoading] = useState(true);
 
-    // Produkte aus API laden
+    // Produkte laden
     useEffect(() => {
         axios.get(`/api/product/warehouse/${warehouseId}`).then(res => {
             setProducts(res.data);
@@ -44,59 +42,83 @@ export default function ProductPage() {
         });
     }, [warehouseId]);
 
-    // Lagerhausdaten (Name, etc.) laden
+    // Lagerhaus laden
     useEffect(() => {
         axios.get(`/api/warehouse/${warehouseId}`).then(res => {
             setWarehouse(res.data);
         });
     }, [warehouseId]);
 
-    // Tabellenspalten definieren
+    // Dropdown-Optionen für Kategorie
+    const categoryOptions = [
+        { value: "ELECTRONICS", label: "Elektronik" },
+        { value: "SPORT_EQUIPMENT", label: "Sportartikel" },
+        { value: "COSMETICS", label: "Kosmetik" },
+        { value: "CLOTHING", label: "Kleidung" }
+    ];
+
+    // Tabellen-Spalten definieren
     const columns: Column<Product>[] = [
         {
             key: "name",
             label: "Produktname",
             editable: true,
-            // Wenn nicht im Editmodus → Link zu Produktdetails
-            render: (v, row) => (
-                <Link
-                    to={`/productdetails/${row.id}`}
-                    className="text-blue-600 underline"
-                >
-                    {v}
-                </Link>
-            )
+            render: (value, row, isEditing) =>
+                !isEditing ? (
+                    // Klickbarer Link zur Detailseite
+                    <Link
+                        to={`/productdetails/${row.id}`}
+                        className="text-blue-600 underline"
+                    >
+                        {value}
+                    </Link>
+                ) : (
+                    value
+                )
         },
-        { key: "quantity", label: "Menge", editable: true },
+        { key: "quantity", label: "Menge", editable: true, inputType: "number" },
         { key: "barcode", label: "Barcode", editable: true },
-        { key: "category", label: "Kategorie", editable: true },
+
+        {
+            key: "category",
+            label: "Kategorie",
+            editable: true,
+            inputType: "select",
+            selectOptions: categoryOptions,
+
+            // Anzeige des Labels statt des ENUM-Werts
+            render(value, _row, isEditing) {
+                if (isEditing) return value;
+                const option = categoryOptions.find(o => o.value === value);
+                return option?.label ?? value;
+            }
+        }
     ];
 
-    // Speichert neue oder bestehende Produkte
+    // Speichern – POST bei neuen IDs, sonst PUT
     const handleSave = async (row: Product) => {
-
-        // Neues Produkt
         if (row.id.startsWith("new-")) {
             const res = await axios.post("/api/product", {
                 ...row,
-                warehouseId        // Produkt wird diesem Lagerhaus zugeordnet
+                warehouseId // Bezug zum Lagerhaus
             });
             return res.data;
         }
 
-        // Bestehendes Produkt aktualisieren
         const res = await axios.put(`/api/product/${row.id}`, row);
         return res.data;
     };
 
-    // Produkt endgültig löschen
+    // Löschen im Backend
     const handleDelete = async (id: string) => {
         await axios.delete(`/api/product/${id}`);
     };
 
-    // Neue Produktzeile einfügen
+    // Neue leere Produktzeile einfügen + direkt Edit starten
     const handleAdd = () => {
-        const id = "new-" + Math.random();
+        if (editingId) return;
+
+        const id = "new-" + crypto.randomUUID();
 
         setProducts(prev => [
             {
@@ -104,35 +126,31 @@ export default function ProductPage() {
                 name: "",
                 quantity: 0,
                 barcode: "",
-                category: ""
+                category: "ELECTRONICS" // Default-Wert
             },
             ...prev
         ]);
 
-        // Neue Zeile sofort editieren
         setEditingId(id);
     };
 
-    // Ladeanzeige
     if (loading) return <p className="p-4">Lade Produkte…</p>;
 
     return (
         <div className="max-w-5xl mx-auto mt-10">
 
-            {/* Titel + "Produkt hinzufügen" Button */}
             <div className="flex justify-between mb-6">
-                <h1 className="text-xl font-bold">
-                    Lagerhaus: {warehouse?.name}
-                </h1>
+                <h1 className="text-xl font-bold">Lagerhaus: {warehouse?.name}</h1>
 
+                {/* Neue Produktzeile */}
                 <button
                     onClick={handleAdd}
-                    // Button deaktivieren, wenn bereits ein neues Produkt erstellt wird
-                    disabled={products.some(p => p.id.startsWith("new-"))}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl 
-        ${products.some(p => p.id.startsWith("new-"))
-                        ? "bg-gray-400 text-white cursor-not-allowed"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    disabled={!!editingId}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl
+                        ${
+                        editingId
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
                     }`}
                 >
                     <Plus size={18} />
@@ -140,7 +158,7 @@ export default function ProductPage() {
                 </button>
             </div>
 
-            {/* Wiederverwendbare Tabellensablone */}
+            {/* Wiederverwendbare Tabelle */}
             <EditableTable
                 columns={columns}
                 data={products}

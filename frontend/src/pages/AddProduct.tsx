@@ -100,7 +100,7 @@ export default function AddProduct() {
                 <label>Category:
                     <select value={productCategory} onChange={handleChange}>
                         {categories.map((category) => (
-                            <option value={category.value}>{category.label}</option>
+                            <option value={category.value}>{category.label} key={category.value}</option>
                         ))}
                     </select>
                 </label>

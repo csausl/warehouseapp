@@ -73,10 +73,8 @@ export default function AddProduct() {
             <h1>Add a new Product</h1>
             <form onSubmit={handleSubmit}>
                 <label>Product Name:
-                <input name={"Product Name"}
-                    onChange={(e) => setProductName(e.target.value)}
-                    placeholder={"Enter Product Name"}
-                    value={productName}
+                    <input name={"Product Name"} onChange={(e) => setProductName(e.target.value)}
+                    placeholder={"Enter Product Name"} value={productName}
                 />
                 </label>
                 <label>Product Description:

@@ -1,4 +1,4 @@
-name: SonarQube-Frontend
+name: Sonarqube-Frontend
 on:
   push:
     branches:

@@ -47,7 +47,9 @@ export default function AddProduct() {
     }
 
     const handleChange = (event:ChangeEvent<HTMLSelectElement>) => {
-        setProductCategory(event.target.value);
+       // setProductCategory(event.target.value);
+        console.log(event.target.value);
+        setProductCategory("ELECTRONICS");
     };
 
     function resetForm() {
@@ -86,7 +88,7 @@ export default function AddProduct() {
                 </label>
                 <label>Quantity:<input
                     name={"Quantity"}
-                    onChange={(e) => setProductQuantity(e.target.value)}
+                    onChange={(e) => setProductQuantity(e.target.valueAsNumber)}
                     placeholder={"Enter quantity"}
                     type="number"
                     value={productQuantity}

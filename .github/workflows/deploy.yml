@@ -86,4 +86,4 @@ jobs:
     steps:
       - name: Trigger Render.com Deployment
         run: |
-          curl -X POST ${{sercrets.RENDER_DEPLOY_HOOK}}
+          curl -X POST ${{secrets.RENDER_DEPLOY_HOOK}}

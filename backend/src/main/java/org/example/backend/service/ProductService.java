@@ -1,6 +1,7 @@
 package org.example.backend.service;
 
 import org.example.backend.model.dto.InboundOrderDto;
+import org.example.backend.model.dto.NewProductDTO;
 import org.example.backend.model.entities.InboundOrder;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Supplier;
@@ -13,21 +14,29 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductService {
     private final ProductRepo productRepo;
     private final InboundOrderRepo inboundOrderRepo;
     private final SupplierRepo supplierRepo;
+    private final IDService idService;
+    private final BarCodeService barCodeService;
 
     Product defaultproduct=new Product("1","testproduct","123445", "testprodukt",1, Category.CLOTHING);
 
 
-    public ProductService(ProductRepo productRepo, InboundOrderRepo inboundOrderRepo, SupplierRepo supplierRepo) {
+    public ProductService(ProductRepo productRepo,
+                          InboundOrderRepo inboundOrderRepo,
+                          SupplierRepo supplierRepo,
+                          IDService idService,
+                          BarCodeService barCodeService
+                          ) {
         this.productRepo = productRepo;
         this.inboundOrderRepo = inboundOrderRepo;
         this.supplierRepo = supplierRepo;
+        this.idService = idService;
+        this.barCodeService = barCodeService;
         this.productRepo.save(defaultproduct);
     }
 
@@ -53,6 +62,19 @@ public class ProductService {
         return  product;
     }
 
+    public Product addProduct(NewProductDTO newProductDTO) {
+        return productRepo.save(createProductFromDTO(newProductDTO));
+    }
+
+    public Product createProductFromDTO(NewProductDTO newProduct) {
+        return  new Product(idService.createId(),
+                newProduct.name(),
+                barCodeService.createBarCode(),
+                newProduct.description(),
+                newProduct.quantity(),
+                newProduct.category());
+    }
+
     public Product create(InboundOrderDto inboundOrderDto) {
 //        inboundOrderDto.product().withBarcode(generateBarcode());
         Product newProduct = productRepo.save(inboundOrderDto.product());
@@ -73,9 +95,5 @@ public class ProductService {
 
     public void delete(String id) {
         productRepo.deleteById(id);
-    }
-
-    private String generateBarcode() {
-        return UUID.randomUUID().toString();
     }
 }

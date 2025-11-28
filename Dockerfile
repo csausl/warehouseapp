@@ -1,4 +1,4 @@
 FROM eclipse-temurin:21
 EXPOSE 8080
-ADD backend/target/warehouseapp.jar warehouseapp.jar
-ENTRYPOINT ["java","-jar","warehouseapp.jar"]
+ADD backend/target/app.jar app.jar
+ENTRYPOINT ["java","-jar","app.jar"]

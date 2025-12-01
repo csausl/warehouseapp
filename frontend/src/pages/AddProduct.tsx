@@ -13,6 +13,8 @@ import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
 // }
 export type ProductCategories = "ELECTRONICS" | "SPORT_EQUIPMENT" | "COSMETICS" | "CLOTHING"
 
+export const allPossibleCategories: ProductCategories[] = ["ELECTRONICS", "SPORT_EQUIPMENT", "COSMETICS", "CLOTHING"]
+
 const categories = [
     { label: 'ELECTRONICS', value: 'ELECTRONICS' },
     { label: 'SPORT_EQUIPMENT', value: 'SPORT_EQUIPMENT' },
@@ -47,9 +49,7 @@ export default function AddProduct() {
     }
 
     const handleChange = (event:ChangeEvent<HTMLSelectElement>) => {
-       // setProductCategory(event.target.value);
-        console.log(event.target.value);
-        setProductCategory("ELECTRONICS");
+        setProductCategory(event.target.value as ProductCategories);
     };
 
     function resetForm() {

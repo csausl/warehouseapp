@@ -22,4 +22,9 @@ public class ProductController {
         //NewProductDTO test=new NewProductDTO(newProduct.name(),newProduct.barcode(),newProduct.description(),newProduct.quantity(), Category.CLOTHING);
         return productService.addProduct(newProduct);
     }
+
+    @GetMapping("/example")
+    public String example(){
+        return  "Hello World";
+    }
 }

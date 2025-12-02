@@ -41,4 +41,11 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.barcode").isNotEmpty());
     }
+
+    @Test
+    void example() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/warehouse/example"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Hello World"));
+    }
 }

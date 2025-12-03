@@ -23,6 +23,7 @@ public class ProductController {
         return productService.addProduct(newProduct);
     }
 
+    // Test Endpunkt um Authentifictation und Tests mit Auth zu testen
     @GetMapping("/example")
     public String example(){
         return  "Hello World";

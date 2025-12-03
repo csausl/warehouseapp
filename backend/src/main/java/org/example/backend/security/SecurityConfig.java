@@ -28,11 +28,12 @@ public class SecurityConfig {
                         // es lässt sich mit HttpMethod.GET / HttpMethod.POST.. auch auf spezielle Endpunkte filtern
                         //.anyRequest().authenticated() // wenn ich für jede Anfrage eine Auth erwarte, komme ich nicht mal auf die Logion Seite
                         //.requestMatchers(HttpMethod.GET, "/api/dashboard").authenticated() // spezifischer Endpunkt zuerst gefiltert
-                        .requestMatchers("/api/auth/me").authenticated() // anfrage hierauf geht nur wenn authentifiziert
-                        .requestMatchers("/api/secured").authenticated()
+                        .requestMatchers("/api/auth").authenticated() // anfrage hierauf geht nur wenn authentifiziert
+                        //.requestMatchers("/api/secured").authenticated()
                         .requestMatchers("/api/warehouse/example").authenticated()
                         .anyRequest().permitAll() // hierauf sind alle nicht authentifizierten anfragen ok - ERST AM ENDE!
                 )
+                .logout(lo -> lo.logoutSuccessUrl(appUrl))
                 .oauth2Login(o -> o.defaultSuccessUrl(appUrl)); // AppUrl enthält die Ziel-Seite nach Login OK
                 //.oauth2Login(o -> o.defaultSuccessUrl("http://localhost:5173")); // AppUrl enthält die Ziel-Seite nach Login OK
         return http.build();

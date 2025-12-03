@@ -30,7 +30,7 @@ public class SecurityConfig {
                         //.requestMatchers(HttpMethod.GET, "/api/dashboard").authenticated() // spezifischer Endpunkt zuerst gefiltert
                         .requestMatchers("/api/auth/me").authenticated() // anfrage hierauf geht nur wenn authentifiziert
                         .requestMatchers("/api/secured").authenticated()
-                        .requestMatchers("api/warehouse/example").authenticated()
+                        .requestMatchers("/api/warehouse/example").authenticated()
                         .anyRequest().permitAll() // hierauf sind alle nicht authentifizierten anfragen ok - ERST AM ENDE!
                 )
                 .oauth2Login(o -> o.defaultSuccessUrl(appUrl)); // AppUrl enthält die Ziel-Seite nach Login OK

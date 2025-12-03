@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -28,11 +30,15 @@ public class SecurityConfig {
                         // es lässt sich mit HttpMethod.GET / HttpMethod.POST.. auch auf spezielle Endpunkte filtern
                         //.anyRequest().authenticated() // wenn ich für jede Anfrage eine Auth erwarte, komme ich nicht mal auf die Logion Seite
                         //.requestMatchers(HttpMethod.GET, "/api/dashboard").authenticated() // spezifischer Endpunkt zuerst gefiltert
-                        .requestMatchers("/api/auth").authenticated() // anfrage hierauf geht nur wenn authentifiziert
+                        //.requestMatchers("/api/auth/standard/me").authenticated() // anfrage hierauf geht nur wenn authentifiziert
+                        //.requestMatchers("/api/auth/advanced/me").authenticated() // anfrage hierauf geht nur wenn authentifiziert
                         //.requestMatchers("/api/secured").authenticated()
-                        .requestMatchers("/api/warehouse/example").authenticated()
+                        .requestMatchers("/api/warehouse/example").hasAuthority("USER")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .anyRequest().permitAll() // hierauf sind alle nicht authentifizierten anfragen ok - ERST AM ENDE!
                 )
+                .exceptionHandling(exceptionHandlingConfigurer ->
+                        exceptionHandlingConfigurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .logout(lo -> lo.logoutSuccessUrl(appUrl))
                 .oauth2Login(o -> o.defaultSuccessUrl(appUrl)); // AppUrl enthält die Ziel-Seite nach Login OK
                 //.oauth2Login(o -> o.defaultSuccessUrl("http://localhost:5173")); // AppUrl enthält die Ziel-Seite nach Login OK

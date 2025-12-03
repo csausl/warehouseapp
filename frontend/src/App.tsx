@@ -25,12 +25,20 @@ function App() {
     }
 
     const loadUser =()=>{
-        axios.get("/api/auth")
-            .then(response => setUser(response.data))
-            .catch(error => {
-                setUser(null);
-                console.log(error);
+        axios.get("/api/auth/advanced/me")
+            .then(response => {
+                console.log(response.data)
+                if(response.data===null){
+                    setUser(undefined)
+                }
+                else setUser(response.data.username)
             })
+            .catch(error => {
+                setUser(undefined);
+                console.log(error);
+                console.log(user)
+            })
+
     }
 
     useEffect(() => {

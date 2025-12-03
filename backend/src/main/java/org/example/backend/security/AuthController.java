@@ -10,9 +10,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @GetMapping()
-    public String getMe(@AuthenticationPrincipal OAuth2User user) {
+    @GetMapping("/advanced/me")
+    public AppUser getMe(@AuthenticationPrincipal OAuth2User user) {
         //return user.getAttributes().get("login").toString();
-        return user.getAttribute("login").toString();
+        //return user.getAttribute("login").toString();
+
+        return new AppUser(
+                user.getName(),
+                user.getAttributes().get("login").toString(),
+                user.getAttributes().get("avatar_url").toString(),
+                user.getAttributes().get("role").toString()
+        );
+
     }
+
+    @GetMapping("/standard/me")
+    public String standardLogin(@AuthenticationPrincipal OAuth2User user) {
+        //return user.getAttributes().get("login").toString();
+        if (user == null){
+            return "";
+        }
+        else return user.getAttribute("login").toString();
+    }
+
+
 }

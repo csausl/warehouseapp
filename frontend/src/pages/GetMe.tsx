@@ -4,7 +4,7 @@ import {useState} from "react";
 export default function GetMe() {
     const [username, setUsername] = useState("");
     function getMe(){
-        axios.get('/api/auth/me').then((response) => {
+        axios.get('/api/auth').then((response) => {
                 //console.log(response.data);
                 setUsername(response.data);
             }

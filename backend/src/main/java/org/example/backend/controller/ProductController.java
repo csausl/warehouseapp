@@ -26,6 +26,6 @@ public class ProductController {
     // Test Endpunkt um Authentifictation und Tests mit Auth zu testen
     @GetMapping("/example")
     public String example(){
-        return  "Hello World";
+        return  "Hello User";
     }
 }

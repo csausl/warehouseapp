@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import Navbar from "./pages/Navbar.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import AdminPage from "./pages/AdminPage.tsx";
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
                 <Route element={<ProtectedRoute user={user}/>}>
                     <Route path={"/hello"} element={<LandingPage username={user}/>}/>
                     <Route path={"/dashboard"} element={<Dashboard/>} />
+                    <Route path={"/admin"} element={<AdminPage/>} />
                 </Route>
            </Routes>
             <button onClick={login}>login</button>

@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final AppUserRepository appUserRepository;
 
     // wir erweitern die standard loadUser Methode, um unsere eigene createAppUser
+    // das scheint automatisch im Hintergrund zu passieren
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException{
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
@@ -32,6 +34,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 new SimpleGrantedAuthority(appUser.role())),
                 oAuth2User.getAttributes(),
                 "id");
+    }
+
+
+    public AppUser findUserByUsername(OAuth2User oAuth2User) {
+        if (oAuth2User == null) return new AppUser("","","","");
+        else return appUserRepository.findById(oAuth2User.getName()).orElse(new AppUser("","","",""));
     }
 
     private AppUser createAppUser(OAuth2User oAuth2User) {

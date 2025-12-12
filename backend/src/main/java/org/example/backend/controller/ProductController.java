@@ -34,6 +34,4 @@ public class ProductController {
     public String rebaseexample(){
         return  "rebase";
     }
-
-
 }

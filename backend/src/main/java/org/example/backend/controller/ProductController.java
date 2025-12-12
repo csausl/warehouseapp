@@ -22,4 +22,12 @@ public class ProductController {
         //NewProductDTO test=new NewProductDTO(newProduct.name(),newProduct.barcode(),newProduct.description(),newProduct.quantity(), Category.CLOTHING);
         return productService.addProduct(newProduct);
     }
+
+    // Test Endpunkt um Authentifictation und Tests mit Auth zu testen
+    @GetMapping("/example")
+    public String example(){
+        return  "Hello User";
+    }
+
+
 }

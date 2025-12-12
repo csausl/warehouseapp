@@ -29,5 +29,11 @@ public class ProductController {
         return  "Hello User";
     }
 
+    // Test Endpunkt um Authentifictation und Tests mit Auth zu testen
+    @GetMapping("/example/rebasetest")
+    public String rebaseexample(){
+        return  "rebase";
+    }
+
 
 }
